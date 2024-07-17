@@ -37,6 +37,7 @@ APPS = [
     'celery',
     'crispy_forms',
     "crispy_bootstrap5",
+    #'django_session_timeout',
 ]
 
 INSTALLED_APPS = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'django_session_timeout.middleware.SessionTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'publicidad.urls'
@@ -165,12 +167,12 @@ EMAIL_TIMEOUT= 3
 
 
 
-CELERY_BEAT_SCHEDULE = {
-    'restar-conexiones': {
-        'task': 'restar_conexiones',
-        'schedule': '*/5 * * * *',  # cada 5 minutos
-    },
-}
+#CELERY_BEAT_SCHEDULE = {
+#    'restar-conexiones': {
+#        'task': 'restar_conexiones',
+#        'schedule': '*/5 * * * *',  # cada 5 minutos
+#    },
+#}
 
 
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
@@ -180,6 +182,8 @@ CELERY_BEAT_SCHEDULE = {
 #SESSION_CACHE_ALIAS = 'default'
 #SESSION_EXPIRE_AT = 300  # 5 minutos
 
+SESSION_EXPIRE_SECONDS = 28800  # 1 hour
+SESSION_TIMEOUT_REDIRECT = 'login'
 # CRISPY TEMPLATES
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

@@ -5,7 +5,7 @@
     <h1>Sistema de Publicidad OnLine</h1>
     {% if request.user.is_authenticated %}
         {% if request.user.is_staff %}
-            <a href="{% url 'publicidad:videos' %}" class="badge bg-primary" >Crea el video</a>
+            <a href="{% url 'publicidad:videos' %}" class="badge bg-primary m-3" >Crea el video</a>
         {% endif %}    
         
         {% if not request.user.is_staff %}

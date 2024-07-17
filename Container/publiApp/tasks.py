@@ -5,7 +5,7 @@ from django.utils import timezone
 from Container.publiApp.models import Cliente
 from celery import shared_task
 
-
+"""
 
 @shared_task
 def restar_conexiones():
@@ -17,3 +17,5 @@ def restar_conexiones():
         cliente.save()
         from django.contrib.auth import logout
         logout(cliente.usuario)
+
+        """

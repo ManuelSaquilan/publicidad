@@ -1,0 +1,13 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>Usuarios logueados</h1>
+  <ul>
+    {% for user in users %}
+      <li>
+        {{ user.username }} (sesión iniciada hace {{ user.session.expire_date|timesince }})
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

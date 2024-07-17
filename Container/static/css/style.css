@@ -21,3 +21,7 @@
 #email:hover{
   filter:drop-shadow(1px 1px 1px blue);
 }
+
+.img-fluid {
+  display: block !important;
+}

@@ -11,6 +11,7 @@
                         <th class="text-center" scope="col">Nombre</th>
                         <th class="text-center" scope="col">Dispositivos Contratados</th>
                         <th class="text-center" scope="col">Dispositivos Conectados</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,6 +21,12 @@
                             <td class="text-center">{{ user.nombre }}</td>
                             <td class="text-center">{{ user.contrato.dispositivos }}</td>
                             <td class="text-center">{{ user.connection_count }}</td>
+                            <td>
+                            <form action="{% url 'publicidad:finalizar_sesion' user.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Finalizar sesión</button>
+                            </form>
+                            </td>
                         {% endif %}
                     </tr>
                     {% endfor %}

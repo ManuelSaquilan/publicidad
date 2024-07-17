@@ -19,14 +19,3 @@ def decrementar_conexion_usuario(sender, user, request, **kwargs):
     user.connection_count -= 1
     user.save()
     
-"""
-from django.shortcuts import get_object_or_404
-from publiApp.models import Cliente
-
-@receiver(user_logged_out)
-def decrementar_conexion_usuario(sender, user, request, **kwargs):
-    cliente = get_object_or_404(Cliente, usuario_administrador=user)
-    cliente.connection_count -= 1
-    cliente.save()
-
-"""

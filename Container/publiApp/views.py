@@ -248,15 +248,16 @@ class index(View):
 
 
 from django.views.decorators.http import require_GET
-
+"""
 @require_GET
 def ping_view(request):
-    """
+    
     request.user.cliente.last_ping = timezone.now()
-    request.user.cliente.save()"""
+    request.user.cliente.save()
     request.user.last_ping = timezone.now()
     request.user.save()
     return HttpResponse('OK')
+"""
 
 def get_active_sessions(request):
     active_sessions = Session.objects.filter(expire_date__gte=datetime.now())
@@ -267,3 +268,11 @@ def get_active_sessions(request):
         return timesince(delta)
 
     return render(request, 'sesiones_activas.html', {'users': users, 'active_sessions': active_sessions, 'get_session_time': get_session_time})
+
+def finalizar_sesion(request, user_id):
+    sessions = Session.objects.filter(expire_date__gte=datetime.now())
+    for s in sessions:
+        if s.get_decoded().get('_auth_user_id') == user_id:
+            s.delete()
+            break
+    return redirect('publicidad:sesiones_activas')  # Redirige a la página de sesiones activas

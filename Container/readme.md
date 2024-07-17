@@ -42,3 +42,20 @@ superusaurio: manuel
 nombre: Manuel Saquilan
 mail: manuel.saquilan@gmail.com
 pass: Cali2021++
+
+
+linea borrada en base_template
+
+<script>
+        
+        setInterval(function() {
+            $.ajax({
+                type: 'GET',
+                url: '{% url "publicidad:ping_view" %}',
+                success: function(data) {
+                    console.log('Ping sent!');
+                }
+            });
+        }, 60000); // 1 minuto
+        
+    </script>
