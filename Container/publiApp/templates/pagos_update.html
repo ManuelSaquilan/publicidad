@@ -1,0 +1,27 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    
+    <div class="container">
+        <H1>{{ Titulo }}</H1>
+        <form action="{{ pagos.id }}" method="post">
+            {% csrf_token %}
+            <!--<div>{{form.as_p}}-->    
+                <label>Comercio:</label>
+                <input type="text" name="nombre" value="{{ pagos.nombre }}"
+                    class="form-control" style="width: auto;color: grey;" readonly/>
+            
+                <label>Fecha de Pago:</label>
+                <input type="datetime" name="fechaPago" value='{{ pagos.fechaPago | date:"d/m/Y" }}'
+                    class="form-control" style="width: auto;" />
+            
+                <label>Importe:</label>
+                <input type="number" name="pago" value="{{ pagos.pago }}"
+                    class="form-control" style="width: auto;" min="0"/>         
+                <div class="label-input">
+                    <input type="submit" value="{{ tipo }}" class="btn btn-success" />
+                </div>
+        </form>
+    </div>
+{% endblock %}

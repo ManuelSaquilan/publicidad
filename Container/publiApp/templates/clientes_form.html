@@ -1,0 +1,14 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <H1>Nuevo Cliente</H1>
+    <div class="container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <a href="{% url 'publicidad:clientes_all' %}" class="btn btn-danger">Cancelar</a>
+            <button type="submit" class="btn btn-success">Aceptar</button>
+        </form>
+    </div>
+{% endblock %}

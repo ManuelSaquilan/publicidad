@@ -1,0 +1,37 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    
+    <div class="container">
+        <H1>{{ Titulo }}</H1>
+        <form action="{{ cliente.id }}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!--<div>{{form.as_p}}-->    
+                <label for="id_nombre">Cliente:</label>
+                <input type="text" name="nombre" maxlength="30" required="True" id="id_nombre"
+                    value="{{ cliente.nombre }}" class="form-control" style="width: 400px;" />
+            
+                <label for="id_mail">Mail:</label>
+                <input type="email" name="email" id="id_mail" value="{{ cliente.email }}"
+                    class="form-control" style="width: 400px;" />
+            
+                <label for="id_activo">Activo:</label>
+                <select name="activo" id="id_activo" class="form-control" style="width: auto;">
+                    {% if cliente.activo %}
+                    <option value="True" selected >SI</option>
+                    <option value="False" >NO</option>
+                    {% else %}
+                    <option value="True" >SI</option>
+                    <option value="False" selected >NO</option>
+                    {% endif %}
+                </select>
+                <label for="">Video</label>
+                <input type="file" name="video" id="id_video" class="form-control" value="{{ cliente.video }}"/>
+                <div class="label-input m-4">
+                    <a href="{% url 'publicidad:clientes_all' %}" class="btn btn-danger">Cancelar</a>
+                    <input type="submit" value="{{ tipo }}" class="btn btn-success" />
+                </div>
+        </form>
+    </div>
+{% endblock %}

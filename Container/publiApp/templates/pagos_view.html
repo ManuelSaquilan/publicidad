@@ -1,0 +1,38 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <H1>Pagos</H1>
+    <a class="btn btn-info m-3" href="{% url 'publicidad:pagos_create' %}">Nuevo Pago</a>
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Fecha de Vencimiento</th>
+                        <th scope="col">A pagar</th>
+                        <th scope="col">Fecha de pago</th>
+                        <th scope="col">Importe</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                {% for pago in pagos %}
+                <tbody>
+                    <tr class="">
+                        <td scope="row">{{ pago.nombre.nombre}}</td>
+                        <td>{{ pago.fechaVencimiento }}</td>
+                        <td>{{ pago.saldo }}</td>
+                        <td>{{ pago.fechaPago }}</td>
+                        <td>{{ pago.pago }}</td>
+                        <td><a class="btn btn-danger" href="{% url 'publicidad:pagos_delete' pago.id %}">Eliminar</a></td>
+                        <td><a class="btn btn-primary" href="{% url 'publicidad:pagos_update' pago.id %}">Editar</a></td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+        
+    </div>
+{% endblock %}

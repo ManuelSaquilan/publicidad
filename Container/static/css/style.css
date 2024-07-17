@@ -1,0 +1,23 @@
+#myVideo:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
+  }
+
+#busca{
+    display: flex;
+    flex-wrap: wrap;
+    align-items:center;
+    justify-content: flex-end;
+  }
+
+#fondo{
+  background: linear-gradient(rgba(13, 110, 253),30%,rgb(233, 236, 239));
+}
+
+#whats:hover{
+  filter:drop-shadow(1px 1px 1px green);
+}
+
+#email:hover{
+  filter:drop-shadow(1px 1px 1px blue);
+}

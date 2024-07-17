@@ -1,0 +1,48 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    
+    <div class="container">
+        <H1>{{ Titulo }}</H1>
+        <form action="{{ contrato.id }}" method="post">
+            {% csrf_token %}
+            <!--{{form.as_p}}-->
+            <label>Nombre:</label>
+                <input type="text" name="nombre" value="{{ contrato.nombre }}"
+                    class="form-control text-center" style="width: auto;color: grey;" disabled/>
+            
+                <label>Fecha de Contrato:</label>
+                <input type="datetime" name="fechaContrato" value='{{ contrato.fechaContrato | date:"Y-m-d" }}'
+                    class="form-control  text-center" style="width: auto;color: grey;"  disabled/>
+
+                <label>Fecha de Vencimiento Actual:</label>
+                <input type="date" name="fechaVencimientoActual" value='{{ contrato.fechaVencimientoActual | date:"Y-m-d" }}'
+                    class="form-control text-center" style="width: auto;" />
+
+                <label>Registra Deuda:</label>
+                <select name="debe" id="id_debe" class="form-control" style="width: auto;">
+                    {% if contrato.debe %}
+                    <option value="True" selected >SI</option>
+                    <option value="False" >NO</option>
+                    {% else %}
+                    <option value="True" >SI</option>
+                    <option value="False" selected >NO</option>
+                    {% endif %}
+                </select>
+
+                <label>cuota:</label>
+                <input type="number" name="cuota" value="{{ contrato.cuota }}"
+                    class="form-control text-center" style="width: auto;" min="0"/>
+            
+                <label>Dispositivos:</label>
+                <input type="number" name="dispositivos" value="{{ contrato.dispositivos }}"
+                    class="form-control text-center" style="width: auto;" min="1"/>
+                
+            <div class="label-input m-4">
+                <a href="{% url 'publicidad:contratos_list' %}" class="btn btn-danger">Cancelar</a>
+                <input type="submit" value="{{ tipo }}" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+    {% endblock %}

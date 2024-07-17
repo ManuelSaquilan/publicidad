@@ -1,0 +1,42 @@
+{% extends "base_template.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{% if form.errors %}
+<p>Su nombre de usuario y contraseña no coinciden. Inténtalo de nuevo.</p>
+{% endif %}
+
+{% if next %}
+{% if user.is_authenticated %}
+<p>Su cuenta no tiene acceso a esta página. Para proceder,
+    por favor inicie sesión con una cuenta que tenga acceso.</p>
+{% else %}
+<p>Por favor inicie sesión para ver esta página.</p>
+{% endif %}
+{% endif %}
+<div class="pt-4">
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="label-input m-3">
+            <table>
+                <tr>
+                    <td class="text-white">{{ form.username.label_tag }}</td>
+                    <td >{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td class="text-white">{{ form.password.label_tag }}</td>
+                    <td>{{ form.password }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="label-input">
+            <input type="submit" class="btn btn-primary m-3" value="login">
+            <input type="hidden" name="next" value="{{ next }}">
+        </div>
+    </form>
+    <div class="label-input">
+        {# Assumes you setup the password_reset view in your URLconf #}
+        <p><a href="{% url 'password_reset' %}">Olvidó su contraseña?</a></p>
+    </div>
+</div>
+{% endblock %}

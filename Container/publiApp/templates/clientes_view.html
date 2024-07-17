@@ -1,0 +1,49 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <H1>Clientes</H1>
+    <a class="btn btn-info m-4" href="{% url 'publicidad:cliente_create' %}">Nuevo Cliente</a>
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Mail</th>
+                        <th scope="col">Activo</th>
+                        <th scope="col">Video</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                {% if clientes %}
+                    {% for cliente in clientes %}
+                        {% if not cliente.usuario_administrador %}
+                        <tbody>
+                            <tr class="">
+                                <td scope="row">{{ cliente.nombre}}</td>
+                                <td>{{ cliente.email }}</td>
+                                {% if cliente.activo %}
+                                    <td>SI</td>
+                                {% else %}
+                                    <td>NO</td>
+                                {% endif %}
+                                <td><video width="200" height="150" controls>
+                                    {% if cliente.video %}
+                                    <source src="{{ cliente.video.url }}" type="video/mp4">
+                                    Tu navegador no soporta video HTML5
+                                    {% endif %}
+                                </video></td>
+                                <td><a class="btn btn-warning" href="#}">Cambia Password</a></td>
+                                <td><a class="btn btn-primary" href="{% url 'publicidad:cliente_update' cliente.id %}">Editar</a></td>
+                            </tr>
+                        </tbody>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
+        
+    </div>
+{% endblock %}

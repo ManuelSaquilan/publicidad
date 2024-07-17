@@ -1,0 +1,40 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <video id="video-player" width="100%" controls autoplay>
+        <source id="video-source" src="" type="video/mp4">
+    </video>
+    <script>
+        var videos = [{% for video in videos %}"{{ video.video.url }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+        var currentVideo = 0;
+        console.log(videos);
+        
+        
+        function playNextVideo() {
+            var videoPlayer = document.getElementById('video-player');
+            var videoSource = document.getElementById('video-source');
+
+            videoSource.src = videos[currentVideo];
+            
+            videoPlayer.load();
+            videoPlayer.play();
+       
+            videoPlayer.addEventListener('ended', function() {
+                currentVideo = currentVideo + 1;
+                if (currentVideo === videos.length) {
+                    currentVideo = 0;
+                    
+                }
+                playNextVideo();
+            });
+            
+        }
+
+        
+        playNextVideo();
+
+        
+        
+    </script>
+{% endblock %}

@@ -16,7 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.urls import include
+from .views import LandingPage, Publicidad
+
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',LandingPage.as_view(),name='Landing_page'),
+    path('publicidad',Publicidad.as_view(),name='publicidad'),
+    path('publicidad/', include('publiApp.urls')),
+    path('accounts/',include('django.contrib.auth.urls')),
 ]

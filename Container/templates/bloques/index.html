@@ -1,0 +1,26 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <h1>Sistema de Publicidad OnLine</h1>
+    {% if request.user.is_authenticated %}
+        {% if request.user.is_staff %}
+            <a href="{% url 'publicidad:videos' %}" class="badge bg-primary" >Crea el video</a>
+        {% endif %}    
+        
+        {% if not request.user.is_staff %}
+            <h3>Dispositivos contratados: {{ user.contrato.dispositivos }}</h3>
+            <h3>Dipositivos conectados: {{ user.connection_count }}</h3>
+            {% if user.connection_count > user.contrato.dispositivos  %}
+                <h3 class="text-danger">Ha alcanzado el maximimo de dispositivos conectados</h3>
+                <h3 class="text-danger">cierre sesion en otro dispósitivo</h3>
+                <h3 class="text-danger">He intentelo nuevamente</h3>
+            {% endif %}
+            {% if vencido %}
+                <h3 class="text-danger">{{ mensaje }}</h3>
+            {% else %}
+                <h3 class="text-success">{{ mensaje }}</h3>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

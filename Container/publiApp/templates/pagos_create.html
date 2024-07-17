@@ -1,0 +1,51 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <H1>Nuevo Pago</H1>
+    <div class="container">
+        <form action="{% url 'publicidad:busca_cliente' %}" name="busca" id="busca" method="post">
+            {% csrf_token %}
+            <label>Seleccione el Cliente:</label>
+            <input type="text" name="nombrebuscado" list=buscar
+                class="form-control" style="width: auto"/>
+            <datalist id="buscar">
+                {% for cliente in clientes %}
+                    {% if not cliente.usuario_administrador %}
+                        <option value="{{ cliente.nombre }}">{{ cliente.nombre }}</option>
+                    {% endif %}
+                {% endfor %}
+            </datalist>
+            <div class="label-input m-3">
+                <button type="submit" class="btn btn-primary">Busca</button>
+            </div>  
+        </form>
+        <form action="{% url 'publicidad:pagos_create' %}" name="crea" method="post">
+            {% csrf_token %}
+            <!--{{ form.as_p }}-->
+            <label>Cliente:</label>
+            <input type="text" name="id" value='{{ id }}''
+                class="form-control text-center" style="width: auto" hidden readonly/>
+            <input type="text" name="nombre" value='{{ cliente }}''
+                class="form-control text-center" style="width: auto" readonly/>
+            <label>Fecha de Vencimiento:</label>
+            <input type="datetime" name="fechaVencimiento" value='{{ vencimiento | date:"Y-m-d" }}'
+                class="form-control text-center" style="width: auto;" readonly/>
+            <label>A pagar:</label>
+            <input type="number" name="saldo" value="{{ saldo }}"
+                class="form-control text-center" style="width: auto;" min="0" readonly/>   
+            <label>Fecha de Pago:</label>
+            <input type="date" name="fechaPago"
+                class="form-control text-center" style="width: auto;" />
+            <label>Importe:</label>
+            <input type="number" name="pago" value="{{ saldo }}"
+                class="form-control text-center" style="width: auto;" min="0"/>    
+            <div class="label-input m-3">
+                <a href="{% url 'publicidad:pagos_list' %}" class="btn btn-danger">Cancelar</a>
+                <button type="submit" class="btn btn-success">Aceptar</button>
+            </div>     
+        </form>
+    </div>
+    
+    
+{% endblock %}

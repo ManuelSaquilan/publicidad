@@ -1,0 +1,42 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <H1>Contrato</H1>
+    <a class="btn btn-info m-3" href="{% url 'publicidad:contrato_create' %}">Nuevo Contrato</a>
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Fecha de Contrato</th>
+                        <th scope="col">Fecha de Vencimiento</th>
+                        <th scope="col">Registra Deuda</th>
+                        <th scope="col">Cuota</th>
+                        <th scope="col">Dispositivos</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                {% for contrato in contratos %}
+                <tbody>
+                    <tr class="">
+                        <td scope="row">{{ contrato.nombre.nombre }}</td>
+                        <td>{{ contrato.fechaContrato }}</td>
+                        <td>{{ contrato.fechaVencimientoActual }}</td>
+                        {% if contrato.debe %}
+                            <td>SI</td>
+                        {% else %}
+                            <td>NO</td>
+                        {% endif %}
+                        <td>$ {{ contrato.cuota }}</td>
+                        <td>{{ contrato.dispositivos }}</td>
+                        <td><a class="btn btn-primary" href="{% url 'publicidad:contrato_update' contrato.id %}">Editar</a></td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+        
+    </div>
+{% endblock %}

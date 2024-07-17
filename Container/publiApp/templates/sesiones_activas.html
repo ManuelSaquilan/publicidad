@@ -1,0 +1,30 @@
+{% extends "base_template.html" %}
+{% load static %}
+
+{% block content %}
+    <h1>Usuarios logueados</h1>
+    <div class="container">
+        <div class="table-responsive" >
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col">Nombre</th>
+                        <th class="text-center" scope="col">Dispositivos Contratados</th>
+                        <th class="text-center" scope="col">Dispositivos Conectados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    {% for user in users %}
+                        {% if not user.is_staff %}
+                            <td class="text-center">{{ user.nombre }}</td>
+                            <td class="text-center">{{ user.contrato.dispositivos }}</td>
+                            <td class="text-center">{{ user.connection_count }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
