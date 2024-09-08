@@ -13,10 +13,12 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+PROJECT_NAME = 'publicidad'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -25,19 +27,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8ut8^^-j6l=wr=+jz^lc2(vjjzv_da&3_wjbkqphno(zj5^1o4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1",'192.168.1.92']
+ALLOWED_HOSTS = ["publilapaz.online","127.0.0.1",'192.168.1.53']
 
 
 # Application definition
 APPS = [
     "publiApp",
-    'django_celery_beat',
-    'celery',
     'crispy_forms',
     "crispy_bootstrap5",
-    #'django_session_timeout',
+    'celery',
+    'django_celery_beat',
 ]
 
 INSTALLED_APPS = [
@@ -51,10 +52,6 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += APPS
 
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'  # o tu broker de mensajería preferido
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_BEAT_SCHEDULER = 'django-celery-beat.schedulers.DatabaseScheduler'
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -63,7 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'django_session_timeout.middleware.SessionTimeoutMiddleware',
+    'publiApp.middleware.SessionLimitMiddleware',
+    'publiApp.middleware.CustomSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'publicidad.urls'
@@ -167,25 +165,63 @@ EMAIL_TIMEOUT= 3
 
 
 
-#CELERY_BEAT_SCHEDULE = {
-#    'restar-conexiones': {
-#        'task': 'restar_conexiones',
-#        'schedule': '*/5 * * * *',  # cada 5 minutos
-#    },
-#}
 
 
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 #SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-#SESSION_COOKIE_AGE = 0
-#SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+#SESSION_COOKIE_AGE = 60 * 60 * 12  # 60 * 60 * 24 * 7 = 1 semana
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 #SESSION_CACHE_ALIAS = 'default'
-#SESSION_EXPIRE_AT = 300  # 5 minutos
+#SESSION_EXPIRE_AT = 300  # 5 minutos //// 60 = 1 min
 
-SESSION_EXPIRE_SECONDS = 28800  # 1 hour
-SESSION_TIMEOUT_REDIRECT = 'login'
+# Para caducar la sesión X segundos después de la última actividad, utilice la siguiente configuración:
+#SESSION_SAVE_EVERY_REQUEST = True
+#sESSION_EXPIRE_SECONDS = 120 # 3600 = 1 hour
+
+#SESSION_TIMEOUT_REDIRECT = 'login'
+#SESSION_COOKIE_SECURE = True
+#SESSION_SAVE_EVERY_REQUEST = True
+#SESSION_COOKIE_AGE = 1800
+#SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # CRISPY TEMPLATES
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-dark',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+###  CELERY  ###
+
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Argentina/Buenos_Aires'
+CELERY_WORKER_POOL = 'solo'
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    """
+    'tarea-periodica-1': {
+        'task': 'publiApp.tasks.detectar_usuarios_inactivos',
+        'schedule': 60.0,  # Se ejecuta cada 300 segundos (5 minutos)
+    },
+    """
+    'crea-video': {
+        'task': 'publiApp.tasks.crea_video',
+        'schedule': crontab(hour=0, minute=0, day_of_week='sunday'),  # Se ejecuta todos los domingos a las 0 hs
+    },
+}
+

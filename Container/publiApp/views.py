@@ -1,3 +1,4 @@
+import time
 from django.conf import settings
 from django.forms import DateField
 from django.shortcuts import render,redirect,HttpResponse
@@ -6,6 +7,7 @@ from django.views.generic import TemplateView
 
 from datetime import timedelta
 from django.utils import timezone
+from requests import request
 
 from .forms                         import ClientesForm, ContratoForm#, PagosForm
 from django.shortcuts               import HttpResponse
@@ -14,7 +16,7 @@ from django.views.generic.list      import ListView
 from django.views.generic.detail    import DetailView
 from django.views.generic.edit      import CreateView, UpdateView, DeleteView
 from django.views                   import View
-from .models                        import SessionInfo, Cliente, Contrato,Pagos
+from .models                        import Cliente, Contrato,Pagos,CustomSession
 
 from django.db.models import Max, F, ExpressionWrapper ,Value
 
@@ -26,6 +28,9 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
 
 from django.utils.timesince import timesince
+from django.contrib.auth.decorators import login_required
+from django.contrib.sessions.models import Session as DjangoSession
+
 # Create your views here.
 
 
@@ -216,26 +221,25 @@ import os
 
 
 def video_list(request):
-    clientes_activos = Cliente.objects.filter(activo=True)
-    print(clientes_activos)
+    clientes_activos = Cliente.objects.filter(activo=True,usuario_administrador=False)
     videos = clientes_activos.values_list('video', flat=True)
     clips = []
-    print(videos)
     #Itera sobre los videos y crea un clip para cada uno
     media_dir = 'static/media/'
 
     for video in videos:
-        video_path = os.path.join(media_dir, video)
-        clip = mp.VideoFileClip(video_path)
-        print(clip)
-#        clip = mp.VideoFileClip(video[0])
-        clips.append(clip)
-#        # Concatena los clips de video
+        if video:  # Verificar si el archivo de video no está vacío
+            video_path = os.path.join(media_dir, video)
+            if os.path.isfile(video_path):  # Verificar si el archivo existe
+                clip = mp.VideoFileClip(video_path)
+                clips.append(clip)
+
+    if clips:  # Verificar si hay clips para concatenar
         final_video = mp.concatenate_videoclips(clips)
-#
- #       # Guarda el video final
         final_video.write_videofile(os.path.join(settings.MEDIA_ROOT, '', 'video.mp4'))
-    return redirect('Landing_page')
+    
+    #return redirect('Landing_page')
+    return HttpResponse("La tarea de procesamiento de videos se está ejecutando en segundo plano.")
 
 class index(View):
     model = Cliente
@@ -244,35 +248,69 @@ class index(View):
     context_object_name= "clientes"
 
 
-
-
-
-from django.views.decorators.http import require_GET
-"""
-@require_GET
-def ping_view(request):
-    
-    request.user.cliente.last_ping = timezone.now()
-    request.user.cliente.save()
-    request.user.last_ping = timezone.now()
-    request.user.save()
-    return HttpResponse('OK')
-"""
-
+@login_required
 def get_active_sessions(request):
-    active_sessions = Session.objects.filter(expire_date__gte=datetime.now())
-    users = Cliente.objects.filter(id__in=[s.get_decoded().get('_auth_user_id') for s in active_sessions])
+    # Filtra sesiones activas basadas en la expiración en CustomSession
+    active_sessions = CustomSession.objects.filter(expires_at__gte=timezone.now())
 
+    # Obtiene usuarios basados en las sesiones activas
+    user_ids = [s.user_id for s in active_sessions if s.user_id]
+    users = Cliente.objects.filter(id__in=user_ids)
+
+    # Obtén sesiones activas de django_session
+    django_sessions = DjangoSession.objects.filter(expire_date__gte=timezone.now())
+
+    # Prepara los datos para el template
+    sessions_data = [
+        {
+            'session_key': session.session_key,
+            'expire_date': session.expire_date
+        }
+        for session in django_sessions
+    ]
+
+    # Función para calcular el tiempo desde la última actividad
     def get_session_time(session):
-        delta = datetime.now() - session.expire_date
-        return timesince(delta)
+        return timesince(session.last_activity)
 
-    return render(request, 'sesiones_activas.html', {'users': users, 'active_sessions': active_sessions, 'get_session_time': get_session_time})
+    # Pasa la lista de sesiones activas y la función para el cálculo del tiempo
+    context = {
+        'users': users,
+        'active_sessions': active_sessions,
+        'sessions_data': sessions_data,
+        'get_session_time': get_session_time,
+    }
 
+    return render(request, 'sesiones_activas.html', context)
+
+"""
+@login_required
 def finalizar_sesion(request, user_id):
-    sessions = Session.objects.filter(expire_date__gte=datetime.now())
+    # Obtiene todas las sesiones activas
+    sessions = CustomSession.objects.filter(expires_at__gte=timezone.now())
+
+    # Encuentra y elimina la sesión correspondiente al usuario especificado
     for s in sessions:
-        if s.get_decoded().get('_auth_user_id') == user_id:
+        if s.user_id == user_id:
             s.delete()
             break
+
     return redirect('publicidad:sesiones_activas')  # Redirige a la página de sesiones activas
+
+
+def guardar_datos_sesion(request, clave, valor):
+    if request.custom_session:
+        session_data = request.custom_session.data
+        session_data[clave] = valor
+        request.custom_session.data = session_data
+        request.custom_session.save()
+
+def leer_datos_sesion(request, clave):
+    if request.custom_session:
+        return request.custom_session.data.get(clave)
+    return None
+
+def eliminar_sesion(request):
+    if request.custom_session:
+        request.custom_session.delete()
+"""

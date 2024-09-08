@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 from django.contrib.auth.decorators import login_required
 from . import views
@@ -16,7 +17,7 @@ from .views import  ClientesListView\
                     ,busca_cliente\
                     ,pagos_delete\
                     ,get_active_sessions\
-                    ,finalizar_sesion
+                    #,finalizar_sesion\
 
 app_name = "publicidad"
 
@@ -33,8 +34,7 @@ urlpatterns = [
     path('pagos_delete/<int:pk>',pagos_delete, name="pagos_delete"),
     path('videos',video_list, name="videos"),
     path('index',index.as_view(), name="index"),
-    #path('ping/', views.ping_view, name='ping_view'),
     path('busca_cliente/', busca_cliente, name='busca_cliente'),
     path('sesiones/', get_active_sessions, name='sesiones_activas'),
-    path('sesiones/finalizar_sesion/<int:user_id>/', finalizar_sesion, name='finalizar_sesion'),
+    #path('sesiones/finalizar_sesion/<int:user_id>/', finalizar_sesion, name='finalizar_sesion'),
 ]

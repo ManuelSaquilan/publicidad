@@ -2,33 +2,38 @@
 {% load static %}
 
 {% block content %}
-    <h1>Usuarios logueados</h1>
+    <h1>Sesiones Abiertas</h1>
     <div class="container">
-        <div class="table-responsive" >
+        <div class="table-responsive">
             <table class="table table-primary">
                 <thead>
                     <tr>
                         <th class="text-center" scope="col">Nombre</th>
                         <th class="text-center" scope="col">Dispositivos Contratados</th>
-                        <th class="text-center" scope="col">Dispositivos Conectados</th>
-                        <th></th>
+                        <th class="text-center" scope="col">Cookie sesion key</th>
+                        <th class="text-center" scope="col">Expiración de Sesión</th>
+                        <th class="text-center" scope="col">Última Actividad</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
                     {% for user in users %}
-                        {% if not user.is_staff %}
-                            <td class="text-center">{{ user.nombre }}</td>
-                            <td class="text-center">{{ user.contrato.dispositivos }}</td>
-                            <td class="text-center">{{ user.connection_count }}</td>
-                            <td>
-                            <form action="{% url 'publicidad:finalizar_sesion' user.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit">Finalizar sesión</button>
-                            </form>
-                            </td>
-                        {% endif %}
-                    </tr>
+                        <!--{% if not user.is_staff %}-->
+                                {% for session in active_sessions %}
+                                    {% if session.user_id == user.id %}
+                                        
+                                            <tr>
+                                                <td class="text-center">{{ user.nombre }}</td>
+                                                <td class="text-center">{{ user.contrato.dispositivos }}</td>    
+                                                
+                                                <td class="text-center">{{ session.session_key }}</td>
+                                                <td class="text-center">{{ session.expires_at }}</td>
+                                                <td class="text-center">{{ session.last_activity }}</td>
+                                            </tr>
+                                        
+                                    {% endif %}
+                                {% endfor %}
+                            
+                        <!--{% endif %}-->
                     {% endfor %}
                 </tbody>
             </table>

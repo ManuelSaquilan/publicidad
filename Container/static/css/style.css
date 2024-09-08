@@ -14,14 +14,30 @@
   background: linear-gradient(rgba(13, 110, 253),30%,rgb(233, 236, 239));
 }
 
-#whats:hover{
-  filter:drop-shadow(1px 1px 1px green);
+#whats{
+  transform: translatey(-7px);
 }
 
+#email{
+  transform: translatey(-7px);
+}
+
+#whats:hover{
+  filter:drop-shadow(1px 1px 2px green);
+  transform: scale(1.3) translatey(-5px);
+}
+
+
 #email:hover{
-  filter:drop-shadow(1px 1px 1px blue);
+  filter:drop-shadow(1px 1px 2px blue);
+  transform: scale(1.3) translatey(-5px);
 }
 
 .img-fluid {
   display: block !important;
+}
+
+.redes{
+  float:none;
+  display: inline-flex;
 }

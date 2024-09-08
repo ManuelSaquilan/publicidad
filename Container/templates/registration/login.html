@@ -3,19 +3,28 @@
 
 {% block content %}
 {% if form.errors %}
-<p>Su nombre de usuario y contraseña no coinciden. Inténtalo de nuevo.</p>
+<p class="text-white">Su nombre de usuario y contraseña no coinciden. Inténtalo de nuevo.</p>
 {% endif %}
 
 {% if next %}
 {% if user.is_authenticated %}
-<p>Su cuenta no tiene acceso a esta página. Para proceder,
+<p class="text-white">Su cuenta no tiene acceso a esta página. Para proceder,
     por favor inicie sesión con una cuenta que tenga acceso.</p>
 {% else %}
-<p>Por favor inicie sesión para ver esta página.</p>
+<p class="text-white">Por favor inicie sesión para ver esta página.</p>
 {% endif %}
 {% endif %}
 <div class="pt-4">
-    <form method="post" action="{% url 'login' %}">
+    <h3 class="text-white">PUBLICIDAD ONLINE</h3>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <form method="post" action="{% url 'loginview' %}">
         {% csrf_token %}
         <div class="label-input m-3">
             <table>
@@ -34,9 +43,10 @@
             <input type="hidden" name="next" value="{{ next }}">
         </div>
     </form>
+    <h4>{{ mensaje }}</h4>
     <div class="label-input">
         {# Assumes you setup the password_reset view in your URLconf #}
-        <p><a href="{% url 'password_reset' %}">Olvidó su contraseña?</a></p>
+        <p><a class="btn btn-warning"  href="{% url 'password_reset' %}">Olvidó su contraseña?</a></p>
     </div>
 </div>
 {% endblock %}

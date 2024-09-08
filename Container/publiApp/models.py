@@ -5,6 +5,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 from django.contrib.sessions.models import Session
+from django.db.models.signals import post_delete
+
+from django.conf import settings
+import uuid
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, email, username, nombre, password):
@@ -134,8 +138,21 @@ class Contrato(models.Model):
         ordering = ['id']
 
 
-class SessionInfo(models.Model):
-    session_key = models.CharField(max_length=40, unique=True)
-    start_time = models.DateTimeField(auto_now_add=True)
+
+        
+@receiver(post_delete, sender=Session)
+def session_deleted(sender, instance, **kwargs):
+    # Aquí puedes agregar la lógica que necesitas
+    print("La sesión ha sido eliminada")
 
 
+class CustomSession(models.Model):
+    session_key = models.CharField(max_length=32, unique=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    data = models.JSONField(default=dict)  # o un campo de texto si prefieres almacenar datos serializados
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    last_activity = models.DateTimeField(default=timezone.now)
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at

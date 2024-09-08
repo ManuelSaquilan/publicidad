@@ -26,12 +26,9 @@
                 <ul class="navbar-nav me-auto mt-2 mt-lg-0">
                     {% if request.user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'Landing_page' %}" aria-current="page"
-                                >Home
-                                <span class="visually-hidden">(current)</span></a
-                            >
+                            <a class="nav-link active" href="{% url 'Landing_page' %}" aria-current="page">Home<span class="visually-hidden">(current)</span></a>
                         </li>
-                        {% if user.connection_count <= user.contrato.dispositivos  %}
+                        {% if connection_count <= user.contrato.dispositivos  %}
                             {% if not user.contrato.debe %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'publicidad' %}" id="fullscreen-button">Publicidad</a>
@@ -68,7 +65,7 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">INGRESAR</a>
+                            <a class="nav-link" href="{% url 'loginview' %}">INGRESAR</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -85,27 +82,61 @@
     </nav>
 
     <main id="fondo">
-        <div class="text-center">
-            <center class="">
-                {% block content%} {% endblock %}
-            </center>
-            <img src="{% static 'media/publicidad.jpg' %}" alt=""
-            class="img-fluid rounded-top text-center" style="max-width: 40%;" >
-        </div>
+        <center class="">
+            {% block content%} {% endblock %}
+        </center>
+        <img src="{% static 'media/publicidad.jpg' %}" alt=""
+        class="img-fluid rounded-top mx-auto" style="max-width: 40%;" >
     </main>
     
-   
-   <footer>
-    <div class="bg-body-secondary text-center pt-4 pb-4">
+    <footer>
+        <div class="bg-body-secondary text-center pt-4 pb-4">
             <h3>SSCOM INFORMATICA</h3>
-            <div>
-                <a>@2024 Manuel Saquilán</a>
-                <a id="email" class="p-2" href="mailto:sscom.desarrollos@gmail.com"><i class="fa-solid fa-envelope"></i></a>
-                <a id="whats" class="p-2" href="https://api.whatsapp.com/send/?phone=5493832412280"><i class="fa-brands fa-whatsapp"></i></a>
+            <div class="redes">
+                    <a>@2024 Manuel Saquilán</a>
+                    <a id="email" class="p-2" href="mailto:sscom.desarrollos@gmail.com"><img src="{% static '/media/email.svg' %}" alt="" style="height:25px;color:blue"></a>
+                    <a id="whats" class="p-2" href="https://api.whatsapp.com/send/?phone=5493832412280"><img src="{% static '/media/whatsapp.svg' %}" alt="" style="height:25px;"></a>
             </div>
-    </div>
-   </footer>
+        </div>
+    </footer>
     <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
-    
+    <script>
+        // Obtener el token CSRF desde la cookie
+        function getCSRFToken() {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Verifica si el nombre de la cookie es "csrftoken"
+                    if (cookie.substring(0, 10) === 'csrftoken=') {
+                        cookieValue = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Enviar "heartbeat" al servidor cada 60 segundos
+        setInterval(function() {
+            fetch('/api/heartbeat/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()  // Incluir el token CSRF en los encabezados
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Error al enviar heartbeat:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Error al enviar heartbeat:', error);
+            });
+        }, 60000); // 60,000 ms = 60 segundos
+    </script>
 </body>
+
 </html>
